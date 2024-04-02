@@ -23,7 +23,6 @@ public class SwiftbillowApplication {
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
 
-    private static final String PATH = "/home/kayen/StreamripDownloads/";
 
     @Autowired
     public SwiftbillowApplication(AlbumsService albumsService, AlbumRepository albumRepository, TrackRepository trackRepository) {
