@@ -26,18 +26,11 @@ public class SwiftbillowApplication {
 
     @Autowired
     public SwiftbillowApplication(AlbumsService albumsService, AlbumRepository albumRepository, TrackRepository trackRepository) {
-        albumsService.albumsRefresh();
+        albumsService.fullRefresh();
         this.albumRepository = albumRepository;
         this.trackRepository = trackRepository;
     }
-/*
-        private AlbumFull findAlbumById(String id) {
-            return albums.stream()
-                    .filter(album -> album.getId().equals(id))
-                    .findFirst()
-                    .orElse(null);
-        }
-*/
+
     public static void main(String[] args) {
         SpringApplication.run(SwiftbillowApplication.class, args);
     }
@@ -68,16 +61,16 @@ public class SwiftbillowApplication {
     @GetMapping("/albums/{id}/cover")
     public ResponseEntity<byte[]> cover(
             @PathVariable String id,
-            @RequestParam (required = false) String size
+            @RequestParam(required = false) String size
     ) {
         if (size == null) {
             size = "0";
         }
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(AlbumsService.cover(albumRepository.getFullById(Long.parseLong(id)).getCoverPath(), Integer.parseInt(size)));
-
+                .body(AlbumsService.getCoverByPath(albumRepository.getFullById(Long.parseLong(id)).getCoverPath(), Integer.parseInt(size)));
     }
+
     @GetMapping("/tracks")
     public List<Track> tracks(
             @RequestParam(required = false) String search,
@@ -92,11 +85,10 @@ public class SwiftbillowApplication {
             @PathVariable("track") int track
     ) {
         String filePath = albumRepository.getFullById(Long.parseLong(id)).getPath() + "/" +
-                albumRepository.getFullById(Long.parseLong(id)).getTracks().get(track-1).getPath();
-        System.out.println(filePath);
+                albumRepository.getFullById(Long.parseLong(id)).getTracks().get(track - 1).getPath();
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("audio/flac"))
-                .body(AlbumsService.getTrackFile(filePath));
+                .body(AlbumsService.getFileByPath(filePath));
     }
 
     @GetMapping("/genres")
